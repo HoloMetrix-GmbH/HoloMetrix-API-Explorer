@@ -1,0 +1,18 @@
+﻿<Window x:Class="HoloMetrix_API_Explorer.Dialogs.SetSegmentState_Dialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HoloMetrix_API_Explorer.Dialogs"
+        xmlns:hmx="clr-namespace:HoloMetrix.Net.Remote.SoundIntensity;assembly=HoloMetrix.Net.Remote.SoundIntensity"
+        mc:Ignorable="d"
+        Title="SetSegmentState_Dialog" Height="150" Width="220">
+    <Grid Margin="10,10,10,10">
+        <StackPanel>
+            <ComboBox x:Name="combobox_state"/>
+            <RadioButton x:Name="radio_1" GroupName="MeasurementNumber" Content="1" IsChecked="True"/>
+            <RadioButton x:Name="radio_2" GroupName="MeasurementNumber" Content="2"/>
+        </StackPanel>
+        <Button Content="Set State" VerticalAlignment="Bottom" Click="SetSegmentState"/>
+    </Grid>
+</Window>

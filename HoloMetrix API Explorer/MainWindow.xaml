@@ -1,0 +1,88 @@
+﻿<Window x:Class="HoloMetrix_API_Explorer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HoloMetrix_API_Explorer"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="643.517" Width="1140.675" ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="10,10,10,0" VerticalAlignment="Top" Grid.Column="0">
+            <Label Content="Connection Methods" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+            <Button Content="Connect using Device Picker" Click="Connect_DevicePicker"/>
+            <Button Content="Begin Discovery" Click="BeginDiscovery"/>
+            <Button Content="Get Devices" Click="GetDevices"/>
+            <Button Content="Connect to Selected Device" Click="ConnectToDevice"/>
+            <Button Content="Launch HoloLens App" Click="LaunchApp"/>
+            <Button Content="Close Session" Click="CloseSession"/>
+            <StackPanel x:Name="GeneralButtons">
+                <Label Content="General Methods" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                <Button Content="Send Status Message" Click="SendStatusMessages"/>
+                <Button Content="Setup Measurment" Click="Setup"/>
+                <StackPanel x:Name="MeasurementButtons">
+                    <Button Content="Select Segment" Click="SelectSegment"/>
+                    <Button Content="Start Measurement" Click="StartMeasurement"/>
+                    <Button Content="Set Result" Click="SetResult"/>
+                    <Button Content="Clear Result" Click="ClearSegmentResult"/>
+                    <Button Content="Finish Measuring" Click="FinishMeasuring"/>
+                    <Button Content="Resume Measuring" Click="ResumeMeasuring"/>
+                </StackPanel>
+            </StackPanel>
+            <Label Content="Messages" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Connection state:" Grid.Column="0"/>
+                <TextBlock x:Name="txt_connectionState" HorizontalAlignment="Left" TextWrapping="Wrap" Text="|" Grid.Column="1"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="App state:" Grid.Column="0"/>
+                <TextBlock x:Name="txt_appState" HorizontalAlignment="Left" TextWrapping="Wrap" Text="|" Grid.Column="1"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="SI App state:" Grid.Column="0"/>
+                <TextBlock x:Name="txt_siAppState" HorizontalAlignment="Left" TextWrapping="Wrap" Text="|" Grid.Column="1"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Device charge:" Grid.Column="0"/>
+                <TextBlock x:Name="txt_power" HorizontalAlignment="Left" TextWrapping="Wrap" Text="|" Grid.Column="1"/>
+            </Grid>
+        </StackPanel>
+        <StackPanel Margin="10,10,10,0" VerticalAlignment="Top" Grid.Column="1">
+            <StackPanel x:Name="DiscreteButtons">
+                <Label Content="Discrete Measurement" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                <Button Content="Connect, Launch and Setup" Click="ConnectLaunchSetup" />
+                <Button Content="Set Results Gradient" Click="SetGradient"/>
+            </StackPanel>
+            <StackPanel x:Name="ScanButtons">
+                <Label Content="Scan Measurement" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
+                <Button Content="Connect, Launch and Setup" Click="ConnectLaunchSetup" />
+                <Button Content="Set Scan Path" Click="SetScanPath" />
+                <Button Content="Set Segment State" Click="SetSegmentState" />
+            </StackPanel>
+        </StackPanel>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="10,10,10,0" Grid.Column="2" Grid.ColumnSpan="2">
+            <TextBox x:Name="txtbox_log"/>
+        </ScrollViewer>
+    </Grid>
+</Window>

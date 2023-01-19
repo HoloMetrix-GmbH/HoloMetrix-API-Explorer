@@ -1,0 +1,34 @@
+﻿<Window x:Class="HoloMetrix_API_Explorer.Dialogs.Results_Dialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HoloMetrix_API_Explorer.Dialogs"
+        mc:Ignorable="d"
+        Title="Results_Dialog" Height="185.525" Width="419.193" ResizeMode="NoResize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Current Segment" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="127" RenderTransformOrigin="0.343,0.577" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="TextBox_GroupIndex" Grid.Column="1" HorizontalAlignment="Left" Height="20" Margin="5,14,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="54" PreviewTextInput="TextBox_GroupIndex_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_SegmentIndex" Grid.Column="1" HorizontalAlignment="Left" Height="20" Margin="63,14,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="55" Grid.ColumnSpan="2" PreviewTextInput="TextBox_SegmentIndex_PreviewTextInput"/>
+        <Button Content="Set Result" HorizontalAlignment="Left" Margin="10,0,0,10" Width="107" Click="SetResult_Click" Height="22" VerticalAlignment="Bottom"/>
+        <Button Content="Done" HorizontalAlignment="Left" Margin="5,0,0,10" Width="113" Grid.Column="1" Grid.ColumnSpan="2" Click="Done_Click" Height="22" VerticalAlignment="Bottom"/>
+        <TextBox x:Name="TextBox_Result" Grid.Column="1" HorizontalAlignment="Left" Height="20" Margin="5,53,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="54" PreviewTextInput="TextBox_Result_PreviewTextInput"/>
+        <Label Content="Result" HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top" Width="127" RenderTransformOrigin="0.343,0.577" Grid.ColumnSpan="2"/>
+        <CheckBox x:Name="CheckBox_IsNegative" Content="Neg." Grid.Column="1" HorizontalAlignment="Left" Margin="64,55,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="54"/>
+        <Button Content="Random Results (old)" HorizontalAlignment="Left" Margin="10,0,0,37" Width="107" Click="SetAllResultsOld_Click" Height="22" VerticalAlignment="Bottom" FontSize="10"/>
+        <Button Content="Random Results (new)" HorizontalAlignment="Left" Margin="9,0,0,37" Width="107" Click="SetAllResults_Click" Height="22" VerticalAlignment="Bottom" FontSize="10" Grid.ColumnSpan="2" Grid.Column="1"/>
+        <StackPanel Grid.Column="2" HorizontalAlignment="Left" Height="137" Margin="10,10,0,0" VerticalAlignment="Top" Width="118">
+            <Button x:Name="FrontResult" Content="Set Front" Click="FrontResult_Click"/>
+            <Button x:Name="TopResult" Content="Set Top" Click="TopResult_Click"/>
+            <Button x:Name="RightResult" Content="Set Right" Click="RightResult_Click"/>
+            <Button x:Name="LeftResult" Content="Set Left" Click="LeftResult_Click"/>
+            <Button x:Name="BottomResult" Content="Set Bottom" Click="BottomResult_Click"/>
+            <Button x:Name="BackResult" Content="Set Back" Click="BackResult_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
