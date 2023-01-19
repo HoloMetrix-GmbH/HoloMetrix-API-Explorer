@@ -29,14 +29,28 @@ namespace HoloMetrix_API_Explorer
         public MainWindow()
         {
             InitializeComponent();
-            RemoteSession.DeveloperKey = "088238b4-13ca-4795-a090-0d185b3b53a8-d439baef";
-            Log("Developer key registered.");
+            RemoteSession.DeveloperKey = GetLicense("K:\\HoloMetrix\\GIT\\API\\API_Explorer\\license.txt");
+            if (string.IsNullOrEmpty(RemoteSession.DeveloperKey))
+            {
+                Log("Developer Key not found.");
+            }
+            else
+            {
+                Log("Developer key registered.  " + RemoteSession.DeveloperKey);
+            }
+
             Logger.NewLog += Log;
 
             GeneralButtons.Visibility = Visibility.Hidden;
             MeasurementButtons.Visibility = Visibility.Hidden;
             ScanButtons.Visibility = Visibility.Collapsed;
             DiscreteButtons.Visibility = Visibility.Collapsed;
+        }
+
+        private string GetLicense(string licensePath)
+        {
+            StreamReader reader = new StreamReader(licensePath);
+            return reader.ReadToEnd();
         }
 
         private void Connect_DevicePicker(object sender, RoutedEventArgs e)
