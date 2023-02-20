@@ -23,9 +23,9 @@ namespace HoloMetrix_API_Explorer.Dialogs
     /// </summary>
     public partial class Results_Dialog : Window
     {
-        private DiscreteMeasurement Measurement;
+        private Measurement Measurement;
 
-        public Results_Dialog(DiscreteMeasurement measurement)
+        public Results_Dialog(Measurement measurement)
         {
             InitializeComponent();
             Measurement = measurement;

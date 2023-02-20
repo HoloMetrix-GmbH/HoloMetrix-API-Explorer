@@ -29,6 +29,10 @@ namespace HoloMetrix_API_Explorer
         public MainWindow()
         {
             InitializeComponent();
+            var debugOut = new DebugOutput(txtbox_log);
+            Console.SetOut(debugOut);
+            TextWriterTraceListener debugListener = new TextWriterTraceListener(debugOut);
+            Debug.Listeners.Add(debugListener);
             RemoteSession.DeveloperKey = GetLicense("K:\\HoloMetrix\\GIT\\API\\API_Explorer\\license.txt");
             if (string.IsNullOrEmpty(RemoteSession.DeveloperKey))
             {
@@ -45,6 +49,11 @@ namespace HoloMetrix_API_Explorer
             MeasurementButtons.Visibility = Visibility.Hidden;
             ScanButtons.Visibility = Visibility.Collapsed;
             DiscreteButtons.Visibility = Visibility.Collapsed;
+        }
+
+        private void Logger_NewLog(object sender, LogEventArgs e)
+        {
+            Log(e.Message);
         }
 
         private string GetLicense(string licensePath)
@@ -96,7 +105,7 @@ namespace HoloMetrix_API_Explorer
             if (devicesDialog.ShowDialog() == true)
             {
                 device = devicesDialog.SelectedDevice;
-                Console.WriteLine("Selected device: " + device.DeviceInfo.DeviceName);
+                Debug.WriteLine("Selected device: " + device.DeviceInfo.DeviceName);
                 Log("Selected device: " + device.DeviceInfo.DeviceName);
             }
         }
@@ -309,7 +318,7 @@ namespace HoloMetrix_API_Explorer
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception caught in process: {0}", ex);
+                Debug.WriteLine("Exception caught in process: {0}", ex);
                 return;
             }
             */
@@ -317,7 +326,7 @@ namespace HoloMetrix_API_Explorer
 
         private void Measurement_StartMeasurementRequested(object sender, MeasurementEventArgs e)
         {
-            Console.WriteLine("Start Measurement Requested");
+            Debug.WriteLine("Start Measurement Requested");
             Log("Start Measurement Requested");
         }
 
@@ -361,7 +370,7 @@ namespace HoloMetrix_API_Explorer
         {
             if(measurement != null)
             {
-                Results_Dialog resultsDialog = new Results_Dialog(((DiscreteMeasurement)measurement));
+                Results_Dialog resultsDialog = new Results_Dialog(measurement);
                 resultsDialog.ShowDialog();
             }
         }
@@ -382,7 +391,7 @@ namespace HoloMetrix_API_Explorer
         {
             txtbox_log.Dispatcher.Invoke(new Action(() =>
             {
-                txtbox_log.AppendText("\n" + s);
+                txtbox_log.AppendText(s + "\n");
             }));
         }
 
@@ -476,10 +485,12 @@ namespace HoloMetrix_API_Explorer
 
         private void CloseSession(object sender, RoutedEventArgs e)
         {
-            GeneralButtons.Visibility = Visibility.Hidden;
-            MeasurementButtons.Visibility = Visibility.Hidden;
-            ScanButtons.Visibility = Visibility.Collapsed;
-            DiscreteButtons.Visibility = Visibility.Collapsed;
+            Dispatcher.Invoke(() => { 
+                GeneralButtons.Visibility = Visibility.Hidden;
+                MeasurementButtons.Visibility = Visibility.Hidden;
+                ScanButtons.Visibility = Visibility.Collapsed;
+                DiscreteButtons.Visibility = Visibility.Collapsed;
+            });
             measurement = null;
 
             if (remoteSession != null)
@@ -490,7 +501,7 @@ namespace HoloMetrix_API_Explorer
 
         private void BeginDiscovery(object sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Beginning Discovery");
+            Debug.WriteLine("Beginning Discovery");
             Bluetooth.DeviceFound += Bluetooth_DeviceFound;
             Bluetooth.GetDevicesAsync();
 
@@ -505,11 +516,15 @@ namespace HoloMetrix_API_Explorer
                 Debug.WriteLine("Unable to start remote session");
                 return;
             }
-
+            
+            Debug.WriteLine("Trying to launch app");
             siApp = remoteSession.TryLaunchApp<SoundIntensityApp>();
             if (siApp != null)
             {
-                GeneralButtons.Visibility = Visibility.Visible;
+                Dispatcher.Invoke(() =>
+                {
+                    GeneralButtons.Visibility = Visibility.Visible;
+                });
             }
         }
 
@@ -537,6 +552,14 @@ namespace HoloMetrix_API_Explorer
             {
                 SetSegmentState_Dialog stateDialog = new SetSegmentState_Dialog(measurement);
                 stateDialog.ShowDialog();
+            }
+        }
+
+        private void StopMeasurement(object sender, RoutedEventArgs e)
+        {
+            if (measurement != null)
+            {
+                measurement.StopMeasurement();
             }
         }
     }

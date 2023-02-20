@@ -28,6 +28,7 @@
                 <StackPanel x:Name="MeasurementButtons">
                     <Button Content="Select Segment" Click="SelectSegment"/>
                     <Button Content="Start Measurement" Click="StartMeasurement"/>
+                    <Button Content="Stop Measurement" Click="StopMeasurement"/>
                     <Button Content="Set Result" Click="SetResult"/>
                     <Button Content="Clear Result" Click="ClearSegmentResult"/>
                     <Button Content="Finish Measuring" Click="FinishMeasuring"/>
