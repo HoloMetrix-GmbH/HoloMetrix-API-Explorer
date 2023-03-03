@@ -88,7 +88,12 @@ namespace HoloMetrix_API_Explorer
 
         private void BluetoothConnection_ConnectionLost(object sender, EventArgs e)
         {
-            remoteSession = null;
+            if (remoteSession != null)
+            {
+                remoteSession.RemoteChanged_AppStatus -= RemoteSession_RemoteChanged_AppStatus;
+                remoteSession.Battery_ReportUpdated -= RemoteSession_Battery_ReportUpdated;
+                remoteSession = null;
+            }
             siApp = null;
             //txt_connectionState.Text = "Connection Lost";
         }
@@ -167,16 +172,31 @@ namespace HoloMetrix_API_Explorer
             ));
         }
 
-        private void LaunchApp(object sender, RoutedEventArgs e)
+        private async void LaunchApp(object sender, RoutedEventArgs e)
         {
             if(remoteSession != null)
             {
-                siApp = remoteSession.TryLaunchApp<SoundIntensityApp>();
-                if(siApp != null)
+                /*
+                await Task.Run(() =>
+                {
+                    siApp = remoteSession.TryLaunchApp<SoundIntensityApp>();
+                });
+
+                if (siApp != null)
                 {
                     siApp.AppStatusChange += SiApp_RemoteChanged_AppStatus;
                     siApp.ConnectionStatusChange += SiApp_RemoteChanged_ConnectionStatus;
-                    GeneralButtons.Visibility = Visibility.Visible;
+                    this.Dispatcher.Invoke(() => { GeneralButtons.Visibility = Visibility.Visible; });
+                }
+                */
+
+                siApp = await remoteSession.TryLaunchAppAsync<SoundIntensityApp>();
+                Debug.WriteLine("siApp is null?" + (siApp == null).ToString());
+                if (siApp != null)
+                {
+                    siApp.AppStatusChange += SiApp_RemoteChanged_AppStatus;
+                    siApp.ConnectionStatusChange += SiApp_RemoteChanged_ConnectionStatus;
+                    this.Dispatcher.Invoke(() => { GeneralButtons.Visibility = Visibility.Visible; });
                 }
             }
         }
@@ -238,7 +258,7 @@ namespace HoloMetrix_API_Explorer
             Debug.WriteLine("Reject Result received. Rejecting result.");
             Log("Reject Result received. Rejecting result.");
 
-            ((DiscreteMeasurement)measurement).ClearResult(e.SegmentGroupIndex, e.SegmentIndex);
+            measurement.ClearResult(e.SegmentGroupIndex, e.SegmentIndex);
         }
 
         private void SiApp_AppStatusChange(object sender, RemoteChangedEventArgs<SoundIntensityApp.AppStatus> e)
@@ -499,33 +519,99 @@ namespace HoloMetrix_API_Explorer
             }
         }
 
+        bool isSearching = false;
+        bool isConnecting = false;
+        bool deviceFound = false;
+
         private void BeginDiscovery(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Beginning Discovery");
-            Bluetooth.DeviceFound += Bluetooth_DeviceFound;
-            Bluetooth.GetDevicesAsync();
+            if (isSearching)
+            {
+                Debug.WriteLine("Search still running!");
+                return;
+            }
+            if (isConnecting)
+            {
+                Debug.WriteLine("Still trying to connect.");
+                return;
+            }
 
+            deviceFound = false;
+            isSearching = true;
+            Debug.WriteLine("Beginning Discovery");
+            Bluetooth.DeviceFound -= Bluetooth_DeviceFound;
+            Bluetooth.DeviceFound += Bluetooth_DeviceFound;
+
+            Bluetooth.DeviceDiscoveryComplete -= Bluetooth_DeviceDiscoveryComplete;
+            Bluetooth.DeviceDiscoveryComplete += Bluetooth_DeviceDiscoveryComplete;
+
+            Bluetooth.DeviceDiscoveryCanceled -= Bluetooth_DeviceDiscoveryCanceled;
+            Bluetooth.DeviceDiscoveryCanceled += Bluetooth_DeviceDiscoveryCanceled;
+
+            Bluetooth.GetDevicesAsync();
         }
 
-        private void Bluetooth_DeviceFound(object sender, DeviceDiscoveryEventArgs e)
+        private void Bluetooth_DeviceDiscoveryCanceled(object sender, DeviceDiscoveryEventArgs e)
         {
-            Bluetooth.DeviceFound -= Bluetooth_DeviceFound;
+            Debug.WriteLine("Search Cancelled");
+            isSearching = false;
+        }
+
+        private void Bluetooth_DeviceDiscoveryComplete(object sender, DeviceDiscoveryEventArgs e)
+        {
+            Debug.WriteLine("Search Complete");
+            isSearching = false;
+        }
+
+        private async void Bluetooth_DeviceFound(object sender, DeviceDiscoveryEventArgs e)
+        {
+            if (deviceFound)
+            {
+                return;
+            }
+
+            deviceFound = true;
+            isSearching = false;
+
+            if (RemoteSession.Instance != null)
+            {
+                return;
+            }
+
+            Bluetooth.CancelDeviceDiscovery();
+            Debug.WriteLine("API_Explorer: Device Found. -- " + e.Device.DeviceInfo.DeviceName);
+            isConnecting = true;
             remoteSession = e.Device.TryConnectToService();
+            //e.Device.SendPairRequest();
             if (remoteSession == null)
             {
+                isConnecting = false;
                 Debug.WriteLine("Unable to start remote session");
                 return;
             }
-            
+            //e.Device.SendPairRequest();
+
             Debug.WriteLine("Trying to launch app");
-            siApp = remoteSession.TryLaunchApp<SoundIntensityApp>();
+            siApp = await remoteSession.TryLaunchAppAsync<SoundIntensityApp>();
+            //siApp = remoteSession.TryLaunchApp<SoundIntensityApp>();
             if (siApp != null)
             {
                 Dispatcher.Invoke(() =>
                 {
                     GeneralButtons.Visibility = Visibility.Visible;
                 });
+                /*
+                ScanMeasurement sm = (ScanMeasurement)siApp.Setup(MeasurementMethod.Scan, new CuboidObject(300, 300, 300), new CuboidSurface(500, 500, 500, 3, 3, 3, new SurfaceState[6] { SurfaceState.Measure, SurfaceState.Measure, SurfaceState.Measure, SurfaceState.Measure, SurfaceState.Solid, SurfaceState.Ignore }));
+                sm.SelectNextSegment(0, 1);
+                sm.SetScanPath(0, 1, ScanMeasurement.ScanDirection.Down, 3, 3);
+                */
             }
+            else
+            {
+                Debug.WriteLine("siApp is null");
+            }
+
+            isConnecting = false;
         }
 
         private void ClearSegmentResult(object sender, RoutedEventArgs e)
@@ -561,6 +647,11 @@ namespace HoloMetrix_API_Explorer
             {
                 measurement.StopMeasurement();
             }
+        }
+
+        private void CancelDiscovery(object sender, RoutedEventArgs e)
+        {
+            Bluetooth.CancelDeviceDiscovery();
         }
     }
 }

@@ -17,6 +17,7 @@
             <Label Content="Connection Methods" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center"/>
             <Button Content="Connect using Device Picker" Click="Connect_DevicePicker"/>
             <Button Content="Begin Discovery" Click="BeginDiscovery"/>
+            <Button Content="Cancel Discovery" Click="CancelDiscovery"/>
             <Button Content="Get Devices" Click="GetDevices"/>
             <Button Content="Connect to Selected Device" Click="ConnectToDevice"/>
             <Button Content="Launch HoloLens App" Click="LaunchApp"/>
