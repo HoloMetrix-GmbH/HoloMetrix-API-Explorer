@@ -37,7 +37,7 @@ namespace HoloMetrix_API_Explorer.Dialogs
 
         private void Button_Select_Click(object sender, RoutedEventArgs e)
         {
-            measurement.SelectSegment(SegmentGroupIndex, SegmentIndex);
+            measurement.SelectNextSegment(SegmentGroupIndex, SegmentIndex);
         }
 
         private void Button_Cancel_Click(object sender, RoutedEventArgs e)

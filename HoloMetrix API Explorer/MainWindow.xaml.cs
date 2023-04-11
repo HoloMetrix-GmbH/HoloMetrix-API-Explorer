@@ -20,7 +20,6 @@ namespace HoloMetrix_API_Explorer
     public partial class MainWindow : Window
     {
         BluetoothDevice device;
-        RemoteSession remoteSession;
         SoundIntensityApp siApp;
         CuboidObject dut;
         CuboidSurface surface;
@@ -33,7 +32,8 @@ namespace HoloMetrix_API_Explorer
             Console.SetOut(debugOut);
             TextWriterTraceListener debugListener = new TextWriterTraceListener(debugOut);
             Debug.Listeners.Add(debugListener);
-            RemoteSession.DeveloperKey = GetLicense("K:\\HoloMetrix\\GIT\\API\\API_Explorer\\license.txt");
+            //RemoteSession.DeveloperKey = GetLicense("K:\\HoloMetrix\\GIT\\API\\API_Explorer\\license.txt");
+            RemoteSession.DeveloperKey = "1e39b419-568a-4e2b-aa86-faf49f7585c6-52384ec0";
             if (string.IsNullOrEmpty(RemoteSession.DeveloperKey))
             {
                 Log("Developer Key not found.");
@@ -77,31 +77,74 @@ namespace HoloMetrix_API_Explorer
         {
             await Task.Run(() =>
             {
-                remoteSession = Bluetooth.TryConnectToHoloMetrixHub();
-                if (remoteSession != null)
-                {
-                    remoteSession.RemoteChanged_AppStatus += RemoteSession_RemoteChanged_AppStatus;
-                    remoteSession.Battery_ReportUpdated += RemoteSession_Battery_ReportUpdated;
-                }
+                Bluetooth.TryConnectToHoloMetrixHub();
             });
         }
 
         private void BluetoothConnection_ConnectionLost(object sender, EventArgs e)
         {
-            if (remoteSession != null)
+            if (RemoteSession.Instance != null)
             {
-                remoteSession.RemoteChanged_AppStatus -= RemoteSession_RemoteChanged_AppStatus;
-                remoteSession.Battery_ReportUpdated -= RemoteSession_Battery_ReportUpdated;
-                remoteSession = null;
+                RemoteSession.Instance.RemoteChanged_AppStatus -= RemoteSession_RemoteChanged_AppStatus;
+                RemoteSession.Instance.Battery_ReportUpdated -= RemoteSession_Battery_ReportUpdated;
             }
             siApp = null;
             //txt_connectionState.Text = "Connection Lost";
         }
 
-        private void BluetoothConnection_ConnectionEstablished(object sender, ConnectionEstablishedEventArgs e)
+        private async void BluetoothConnection_ConnectionEstablished(object sender, ConnectionEstablishedEventArgs e)
         {
-            txt_connectionState.Text = "Connected";
+            Dispatcher.Invoke(() => {
+                txt_connectionState.Text = "Connected";
+            });
+            
             Log("Connected");
+
+            Debug.WriteLine("Trying to launch app");
+            siApp = await RemoteSession.Instance.TryLaunchAppAsync<SoundIntensityApp>();
+            //siApp = RemoteSession.Instance.TryLaunchApp<SoundIntensityApp>();
+            if (siApp != null)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    GeneralButtons.Visibility = Visibility.Visible;
+                });
+                MeasurementMethod method = MeasurementMethod.Scan;
+                measurement = siApp.Setup(method, new CuboidObject(300, 300, 300), new CuboidSurface(500, 500, 500, 3, 3, 3, new SurfaceState[6] { SurfaceState.Measure, SurfaceState.Measure, SurfaceState.Measure, SurfaceState.Measure, SurfaceState.Solid, SurfaceState.Ignore }));
+                measurement.SelectNextSegment(0, 1);
+                ((ScanMeasurement)measurement).SetScanPath(0, 1, ScanMeasurement.ScanDirection.Down, 3, 3);
+
+                measurement.RejectResultRequested += Measurement_RejectResultRequested;
+                measurement.SelectSegmentRequested += Measurement_SelectSegmentRequested;
+                measurement.StartMeasurementRequested += Measurement_StartMeasurementRequested;
+                measurement.PositionReceived += Measurement_PositionReceived;
+                Debug.WriteLine("Subscribed to events");
+                Log("Subscribed to events");
+
+                Dispatcher.Invoke(() =>
+                {
+
+                    MeasurementButtons.Visibility = Visibility.Visible;
+
+                    if (method == MeasurementMethod.Discrete)
+                    {
+                        DiscreteButtons.Visibility = Visibility.Visible;
+                        ScanButtons.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        DiscreteButtons.Visibility = Visibility.Collapsed;
+                        ScanButtons.Visibility = Visibility.Visible;
+                    }
+                });
+
+            }
+            else
+            {
+                Debug.WriteLine("siApp is null");
+            }
+
+            isConnecting = false;
         }
 
         private void GetDevices(object sender, RoutedEventArgs e)
@@ -119,14 +162,7 @@ namespace HoloMetrix_API_Explorer
         {
             if (device != null)
             {
-                remoteSession = device.TryConnectToService();
-                if (remoteSession != null)
-                {
-                    remoteSession.RemoteChanged_AppStatus += RemoteSession_RemoteChanged_AppStatus;
-                    remoteSession.Battery_ReportUpdated += RemoteSession_Battery_ReportUpdated;
-
-                    remoteSession.GetBatteryReport();
-                }
+                device.TryConnectToService();
             }
         }
 
@@ -174,7 +210,7 @@ namespace HoloMetrix_API_Explorer
 
         private async void LaunchApp(object sender, RoutedEventArgs e)
         {
-            if(remoteSession != null)
+            if(RemoteSession.Instance != null)
             {
                 /*
                 await Task.Run(() =>
@@ -190,7 +226,7 @@ namespace HoloMetrix_API_Explorer
                 }
                 */
 
-                siApp = await remoteSession.TryLaunchAppAsync<SoundIntensityApp>();
+                siApp = await RemoteSession.Instance.TryLaunchAppAsync<SoundIntensityApp>();
                 Debug.WriteLine("siApp is null?" + (siApp == null).ToString());
                 if (siApp != null)
                 {
@@ -320,7 +356,7 @@ namespace HoloMetrix_API_Explorer
                 }
             }
 
-            measurement.SelectSegment(0, 2);
+            measurement.SelectNextSegment(0, 2);
         }
 
         private void Measurement_PositionReceived(object sender, AnchorReceivedEventArgs e)
@@ -352,7 +388,14 @@ namespace HoloMetrix_API_Explorer
 
         private void Measurement_SelectSegmentRequested(object sender, SegmentEventArgs e)
         {
-            measurement.SelectSegment(e.SegmentGroupIndex, e.SegmentIndex);
+            if (!measurement.Surface.SegmentGroups[e.SegmentGroupIndex].Segments[e.SegmentIndex].IsComplete)
+            {
+                measurement.SelectNextSegment(e.SegmentGroupIndex, e.SegmentIndex);
+            }
+            else
+            {
+                measurement.SelectCurrentSegment(e.SegmentGroupIndex, e.SegmentIndex);
+            }
         }
 
         private void SelectSegment(object sender, RoutedEventArgs e)
@@ -422,48 +465,25 @@ namespace HoloMetrix_API_Explorer
 
         private void ConnectLaunchSetup(object sender, RoutedEventArgs e)
         {
-            new Thread(() =>
-            {
-                dut = new CuboidObject(100f, 100f, 100f);
-                surface = new CuboidSurface
-                    (
+            dut = new CuboidObject(100f, 100f, 100f);
+            surface = new CuboidSurface
+                (
                     100f, 100f, 100f,
                     2, 2, 2,
                     new SurfaceState[6]
-                    {
-                    SurfaceState.Measure,
-                    SurfaceState.Measure,
-                    SurfaceState.Measure,
-                    SurfaceState.Measure,
-                    SurfaceState.Solid,
-                    SurfaceState.Measure
-                    }
-                    );
+                        {
+                        SurfaceState.Measure,
+                        SurfaceState.Measure,
+                        SurfaceState.Measure,
+                        SurfaceState.Measure,
+                        SurfaceState.Solid,
+                        SurfaceState.Measure
+                        }
+                );
 
-                remoteSession = Bluetooth.TryConnectToHoloMetrixHub();
-                if (remoteSession == null)
-                    return;
-                RemoteSession.BluetoothConnection.ConnectionLost += BluetoothConnection_ConnectionLost;
-                remoteSession.RemoteChanged_AppStatus += RemoteSession_RemoteChanged_AppStatus;
-                siApp = remoteSession.TryLaunchApp<SoundIntensityApp>();
-                //throw new Exception("Test");
-                if (siApp == null)
-                {
-                    Debug.WriteLine("APP IS NULL");
-                    Log("APP IS NULL");
-                    return;
-                }
-
-                measurement = siApp.Setup(MeasurementMethod.Discrete, dut, surface);
-                measurement.SelectSegmentRequested += Measurement_SelectSegmentRequested;
-                measurement.StartMeasurementRequested += Measurement_StartMeasurementRequested;
-                measurement.PositionReceived += Measurement_PositionReceived;
-            }).Start();
-        }
-
-        private void BluetoothConnection_ConnectionLost1(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
+            BluetoothConnection.ConnectionEstablished -= BluetoothConnection_ConnectionEstablished;
+            BluetoothConnection.ConnectionEstablished += BluetoothConnection_ConnectionEstablished;
+            Bluetooth.TryConnectToHoloMetrixHub();
         }
 
         private void FinishMeasuring(object sender, RoutedEventArgs e)
@@ -483,7 +503,7 @@ namespace HoloMetrix_API_Explorer
 
         private void SendTestData(object sender, RoutedEventArgs e)
         {
-            if(remoteSession != null)
+            if(RemoteSession.Instance != null)
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 //openFileDialog.DefaultExt = ".hmxanchor";
@@ -513,9 +533,9 @@ namespace HoloMetrix_API_Explorer
             });
             measurement = null;
 
-            if (remoteSession != null)
+            if (RemoteSession.Instance != null)
             {
-                remoteSession.CloseSession();
+                RemoteSession.Instance.CloseSession();
             }
         }
 
@@ -563,7 +583,7 @@ namespace HoloMetrix_API_Explorer
             isSearching = false;
         }
 
-        private async void Bluetooth_DeviceFound(object sender, DeviceDiscoveryEventArgs e)
+        private void Bluetooth_DeviceFound(object sender, DeviceDiscoveryEventArgs e)
         {
             if (deviceFound)
             {
@@ -581,37 +601,11 @@ namespace HoloMetrix_API_Explorer
             Bluetooth.CancelDeviceDiscovery();
             Debug.WriteLine("API_Explorer: Device Found. -- " + e.Device.DeviceInfo.DeviceName);
             isConnecting = true;
-            remoteSession = e.Device.TryConnectToService();
-            //e.Device.SendPairRequest();
-            if (remoteSession == null)
-            {
-                isConnecting = false;
-                Debug.WriteLine("Unable to start remote session");
-                return;
-            }
-            //e.Device.SendPairRequest();
 
-            Debug.WriteLine("Trying to launch app");
-            siApp = await remoteSession.TryLaunchAppAsync<SoundIntensityApp>();
-            //siApp = remoteSession.TryLaunchApp<SoundIntensityApp>();
-            if (siApp != null)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    GeneralButtons.Visibility = Visibility.Visible;
-                });
-                /*
-                ScanMeasurement sm = (ScanMeasurement)siApp.Setup(MeasurementMethod.Scan, new CuboidObject(300, 300, 300), new CuboidSurface(500, 500, 500, 3, 3, 3, new SurfaceState[6] { SurfaceState.Measure, SurfaceState.Measure, SurfaceState.Measure, SurfaceState.Measure, SurfaceState.Solid, SurfaceState.Ignore }));
-                sm.SelectNextSegment(0, 1);
-                sm.SetScanPath(0, 1, ScanMeasurement.ScanDirection.Down, 3, 3);
-                */
-            }
-            else
-            {
-                Debug.WriteLine("siApp is null");
-            }
+            BluetoothConnection.ConnectionEstablished -= BluetoothConnection_ConnectionEstablished;
+            BluetoothConnection.ConnectionEstablished += BluetoothConnection_ConnectionEstablished;
 
-            isConnecting = false;
+            e.Device.TryConnectToService();
         }
 
         private void ClearSegmentResult(object sender, RoutedEventArgs e)

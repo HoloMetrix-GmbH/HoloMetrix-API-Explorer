@@ -10,13 +10,13 @@
         <Label Content="Object" HorizontalAlignment="Left" Height="32" Margin="10,10,0,0" VerticalAlignment="Top" Width="84" FontSize="16" FontWeight="Bold" />
 
         <Label Content="Width  - x (mm)" HorizontalAlignment="Left" Margin="10,47,0,0" VerticalAlignment="Top" Width="103" Height="26" />
-        <TextBox x:Name="TextBox_ObjX" HorizontalAlignment="Left" Height="23" Margin="118,51,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_ObjX_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_ObjX" HorizontalAlignment="Left" Height="23" Margin="118,51,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_ObjX_PreviewTextInput"/>
 
         <Label Content="Height - y (mm)" HorizontalAlignment="Left" Margin="10,78,0,0" VerticalAlignment="Top" Width="103" Height="26" />
-        <TextBox x:Name="TextBox_ObjY" HorizontalAlignment="Left" Height="23" Margin="118,82,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_ObjY_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_ObjY" HorizontalAlignment="Left" Height="23" Margin="118,82,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_ObjY_PreviewTextInput"/>
 
         <Label Content="Depth  - z (mm)" HorizontalAlignment="Left" Margin="10,109,0,0" VerticalAlignment="Top" Width="103" Height="26" />
-        <TextBox x:Name="TextBox_ObjZ" HorizontalAlignment="Left" Height="23" Margin="118,113,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_ObjZ_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_ObjZ" HorizontalAlignment="Left" Height="23" Margin="118,113,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_ObjZ_PreviewTextInput"/>
 
         <Label Content="Surface" HorizontalAlignment="Left" Height="32" Margin="10,140,0,0" VerticalAlignment="Top" Width="84" FontSize="16" FontWeight="Bold" Grid.ColumnSpan="2"/>
 
@@ -24,9 +24,9 @@
         <Label Content="Distance - y (mm)" HorizontalAlignment="Left" Margin="10,208,0,0" VerticalAlignment="Top" Width="103" Height="26" Grid.ColumnSpan="2"/>
         <Label Content="Distance - z (mm)" HorizontalAlignment="Left" Margin="10,239,0,0" VerticalAlignment="Top" Width="103" Height="26" Grid.ColumnSpan="2"/>
 
-        <TextBox x:Name="TextBox_SurfX" HorizontalAlignment="Left" Height="23" Margin="118,181,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SurfX_PreviewTextInput"/>
-        <TextBox x:Name="TextBox_SurfY" HorizontalAlignment="Left" Height="23" Margin="118,212,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SurfY_PreviewTextInput"/>
-        <TextBox x:Name="TextBox_SurfZ" HorizontalAlignment="Left" Height="23" Margin="118,243,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SurfZ_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_SurfX" HorizontalAlignment="Left" Height="23" Margin="118,181,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SurfX_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_SurfY" HorizontalAlignment="Left" Height="23" Margin="118,212,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SurfY_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_SurfZ" HorizontalAlignment="Left" Height="23" Margin="118,243,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SurfZ_PreviewTextInput"/>
 
         <Label Content="Left" HorizontalAlignment="Left" Height="26" Margin="244,178,0,0" VerticalAlignment="Top" Width="57" HorizontalContentAlignment="Right"/>
         <ComboBox x:Name="ComboBox_left" HorizontalAlignment="Left" Margin="313,182,0,0" VerticalAlignment="Top" Width="120" />
@@ -45,9 +45,9 @@
         <Label Content="Segmentation - x" HorizontalAlignment="Left" Margin="10,278,0,0" VerticalAlignment="Top" Width="103" Height="26"/>
         <Label Content="Segmentation - y" HorizontalAlignment="Left" Margin="10,309,0,0" VerticalAlignment="Top" Width="103" Height="26"/>
         <Label Content="Segmentation - z" HorizontalAlignment="Left" Margin="10,340,0,0" VerticalAlignment="Top" Width="103" Height="26"/>
-        <TextBox x:Name="TextBox_SegsX" HorizontalAlignment="Left" Height="23" Margin="118,282,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SegsX_PreviewTextInput"/>
-        <TextBox x:Name="TextBox_SegsY" HorizontalAlignment="Left" Height="23" Margin="118,313,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SegsY_PreviewTextInput"/>
-        <TextBox x:Name="TextBox_SegsZ" HorizontalAlignment="Left" Height="23" Margin="118,344,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SegsZ_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_SegsX" HorizontalAlignment="Left" Height="23" Margin="118,282,0,0" TextWrapping="Wrap" Text="2" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SegsX_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_SegsY" HorizontalAlignment="Left" Height="23" Margin="118,313,0,0" TextWrapping="Wrap" Text="2" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SegsY_PreviewTextInput"/>
+        <TextBox x:Name="TextBox_SegsZ" HorizontalAlignment="Left" Height="23" Margin="118,344,0,0" TextWrapping="Wrap" Text="2" VerticalAlignment="Top" Width="120" PreviewTextInput="TextBox_SegsZ_PreviewTextInput"/>
         <Button x:Name="btn_LoadAnchor" Content="Load Anchor" HorizontalAlignment="Left" Margin="313,0,0,10" Width="87" Height="28" VerticalAlignment="Bottom" Click="btn_LoadAnchor_Click"/>
         <Button x:Name="btn_RemovePath" Content="X" HorizontalAlignment="Left" Margin="590,0,0,14" Width="22" Height="20" VerticalAlignment="Bottom" Click="btn_RemovePath_Click"/>
         <TextBlock x:Name="txt_AnchorFile" HorizontalAlignment="Left" Height="28" Margin="405,387,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="180" Background="#FFE0E0E0"/>
