@@ -32,8 +32,7 @@ namespace HoloMetrix_API_Explorer
             Console.SetOut(debugOut);
             TextWriterTraceListener debugListener = new TextWriterTraceListener(debugOut);
             Debug.Listeners.Add(debugListener);
-            //RemoteSession.DeveloperKey = GetLicense("K:\\HoloMetrix\\GIT\\API\\API_Explorer\\license.txt");
-            RemoteSession.DeveloperKey = "1e39b419-568a-4e2b-aa86-faf49f7585c6-52384ec0";
+            RemoteSession.DeveloperKey = GetLicense("K:\\HoloMetrix\\GIT\\API\\API_Explorer\\license.txt");
             if (string.IsNullOrEmpty(RemoteSession.DeveloperKey))
             {
                 Log("Developer Key not found.");
