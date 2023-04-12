@@ -33,7 +33,7 @@ namespace HoloMetrix_API_Explorer.Dialogs
 
         private void Measure_Click(object sender, RoutedEventArgs e)
         {
-            Measurement.SelectSegment(int.Parse(TextBox_GroupIndex.Text), int.Parse(TextBox_SegmentIndex.Text));
+            Measurement.SelectNextSegment(int.Parse(TextBox_GroupIndex.Text), int.Parse(TextBox_SegmentIndex.Text));
             Measurement.StartMeasurement(int.Parse(TextBox_Duration.Text));
         }
 
