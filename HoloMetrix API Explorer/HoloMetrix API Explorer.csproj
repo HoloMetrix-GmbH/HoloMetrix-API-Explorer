@@ -51,7 +51,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>CB19AEFD7B1B6C7254C53C108ABC75A167D16B41</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>12AF17F381F8BC55B321572DBC71AF169D3D4DA8</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>HoloMetrix API Explorer_TemporaryKey.pfx</ManifestKeyFile>

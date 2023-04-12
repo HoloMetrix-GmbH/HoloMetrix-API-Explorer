@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,7 +34,9 @@ namespace HoloMetrix_API_Explorer
             Console.SetOut(debugOut);
             TextWriterTraceListener debugListener = new TextWriterTraceListener(debugOut);
             Debug.Listeners.Add(debugListener);
-            RemoteSession.DeveloperKey = GetLicense("K:\\HoloMetrix\\GIT\\API\\API_Explorer\\license.txt");
+
+            RemoteSession.DeveloperKey = GetLicense("..\\..\\..\\license.txt");
+
             if (string.IsNullOrEmpty(RemoteSession.DeveloperKey))
             {
                 Log("Developer Key not found.");
@@ -58,7 +61,14 @@ namespace HoloMetrix_API_Explorer
 
         private string GetLicense(string licensePath)
         {
-            StreamReader reader = new StreamReader(licensePath);
+            var p = Path.GetFullPath(licensePath);
+            StreamReader reader = new StreamReader(p);
+            return reader.ReadToEnd();
+        }
+
+        private string GetLicense(Stream stream)
+        {
+            StreamReader reader = new StreamReader(stream);
             return reader.ReadToEnd();
         }
 
